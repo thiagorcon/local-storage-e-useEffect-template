@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function App() {
   // Estado para armazenar a lista de compras
-  const [listaCompras, setListaCompras] = useState([]);
+  const [listaCompras, setListaCompras] = useState(['---']);
 
   // Estado para armazenar o valor do item sendo digitado
   const [item, setItem] = useState("");
@@ -15,6 +15,32 @@ export default function App() {
       setItem(""); // Limpa o campo de entrada
     }
   };
+
+  function adicinarNoLocalStorage() {
+    localStorage.setItem("chaveItens", JSON.stringify(listaCompras));
+  }
+
+  function recuperarLista() {
+    const listaRecuperadaJson = localStorage.getItem("chaveItens");
+    const listagemArrayRecuperada = JSON.parse(listaRecuperadaJson);
+    setListaCompras(listagemArrayRecuperada)    
+  }
+
+  function removeListaLocalStorage(){
+    localStorage.removeItem('chaveItens')
+  }
+
+  
+// o recurso do useEffect é para colocpcar a lista dinamicamente
+  useEffect(()=>{
+    recuperarLista()
+  },[]);
+
+  useEffect(()=>{
+    if (listaCompras.length !== 0){
+    adicinarNoLocalStorage()}
+  },[listaCompras])
+  
 
   return (
     <div>
@@ -32,6 +58,11 @@ export default function App() {
           <li key={index}>{compra}</li>
         ))}
       </ul>
+      {/* <button onClick={adicinarNoLocalStorage}>
+        Adicionar no Local Storage
+      </button>
+      <button onClick={recuperarLista}>Recuperar lista</button> */}
+      <button onClick={removeListaLocalStorage}>Remove lista do Local Storage</button>
     </div>
   );
 }
